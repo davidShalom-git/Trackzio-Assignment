@@ -1,57 +1,112 @@
 # Collector's Hub
 
-A premium, modern React web application built for numismatists and collectors to discover, trade, and showcase rare collectibles.
+A responsive web application where users can discover collectible items through a marketplace, browse community posts, and manage their personal collection.
 
-## Features & Modules
-
-### 1. Marketplace
-Browse thousands of rare coins, banknotes, and sets vetted by world-class experts.
-- **Smart Filtering & Searching:** Instantly filter by category and condition, and search by title or tags.
-- **Detailed Listings:** View high-resolution images, seller information, location, and estimated value.
-- **Wishlist & Collection:** Easily bookmark items to your wishlist or add them to your owned collection with a single click.
-
-### 2. Community Feed
-Connect with passionate collectors, share your recent finds, and discuss numismatics.
-- **Interactive Feed:** Browse a rich Instagram-style feed of community posts.
-- **Engagement:** Like and Save posts seamlessly with optimistic UI updates.
-- **Post Details:** Click into any post to view full details and instantly navigate to related marketplace items.
-
-### 3. My Vault (Collection Management)
-A purpose-built vault to manage your personal collection securely.
-- **Owned Items:** Track items you currently own.
-- **Selling:** Seamlessly list your owned items for sale on the marketplace.
-- **Wishlist:** Keep an eye on items you plan to acquire. 
-- **Quick Actions:** Move items between collections (e.g. from Wishlist to Owned) directly from the vault grid.
-
-## Extra Features & UX Polish (Bonus Implementations)
-- **Glassmorphism UI:** Stunning frosted glass effects, ambient background gradients, and premium modern aesthetics.
-- **Micro-Animations:** Tactile, satisfying feedback on interactions (e.g. buttons scaling down on click, images smoothly zooming on hover).
-- **Smart Reusable Components:** Advanced React patterns used to build abstract generic components like `ToggleActionButton` and `FilterBar` that eliminate code duplication.
-- **Optimistic UI Updates:** Instant visual feedback when liking, saving, or wishlisting items before any mock network delay.
-- **Robust Empty States:** Clear, helpful empty states when filters yield no results or collections are empty.
+Built with React, TypeScript, and Tailwind CSS.
 
 ## Setup Instructions
 
-1. Ensure you have Node.js installed.
-2. Clone this repository.
-3. Navigate to the client directory: `cd Client`
-4. Install dependencies: `npm install`
-5. Start the development server: `npm run dev`
+1. Ensure you have **Node.js** (v16 or higher) installed.
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/davidShalom-git/Trackzio-Assignment.git
+   cd Trackzio-Assignment
+   ```
+3. Navigate to the client directory:
+   ```bash
+   cd Client
+   ```
+4. Install dependencies:
+   ```bash
+   npm install
+   ```
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
 6. Open `http://localhost:5173` in your browser.
 
-## Assumptions & Architecture Decisions
+## Assumptions Made
 
-- **State Management:** Because this is a frontend-only take-home assignment, a mock "database" was created using exported TypeScript arrays (`marketplaceItems.ts` and `CommunityPost.ts`). 
-- **Data Mutability:** To simulate a real backend without complex global state providers like Redux, the application mutates the base arrays in memory when actions (like Wishlisting) occur, and uses local component state to trigger instant UI re-renders. (Note: In a production app, this would be replaced with React Query or Redux hitting an actual API).
-- **Styling:** Tailwind CSS was heavily utilized to construct complex, responsive UI components rapidly.
-- **Routing:** Standard client-side routing was implemented using `react-router-dom`.
+- **No Backend / Mock Data:** Since the assignment states "You are free to use mock data," all data is stored as TypeScript arrays in the `src/api/` folder. In a production app, these would be replaced by actual API calls using Fetch or Axios.
+- **No Authentication:** As stated in the assignment, authentication is not required. A placeholder "Sign In" button is shown in the navbar for visual completeness.
+- **State Management with Zustand:** I chose Zustand over Redux or Context API because it provides global state management with minimal boilerplate — a single file (`useAppStore.ts`) manages all application state. This keeps the codebase clean and easy to follow.
+- **Collection = Marketplace Items:** The "My Collection" module manages marketplace items that the user has marked as Owned, Wishlisted, or Selling. This avoids data duplication and keeps a single source of truth.
+- **Estimated Value:** Each item's price serves as the estimated value in the Collection view, since mock valuation data would not add meaningful functionality.
+- **Date Added:** Displayed as the current date since items are added at runtime from mock data.
 
 ## Libraries Used
-- React 18
-- React Router DOM
-- Tailwind CSS
-- Zustand (State Management)
-- Vite (Build Tool)
+
+| Library | Purpose |
+|---------|---------|
+| React 18 | Core UI framework |
+| TypeScript | Type safety across the entire codebase |
+| React Router DOM | Client-side routing between pages |
+| Zustand | Lightweight global state management |
+| Tailwind CSS | Utility-first CSS framework for responsive design |
+| Vite | Fast development server and build tool |
+
+## Additional Features Implemented
+
+### Reusable Component Architecture
+- **`ToggleActionButton`** — A single generic component that handles Like, Save, Add to Collection, Add to Wishlist, and List for Sale actions. It accepts the store type, property name, and render function for the icon. This eliminates duplicated toggle logic across the entire app.
+- **`FilterBar`** — A shared search, filter, and sort component used across Marketplace, Community Feed, and My Collection. It accepts an `hideAdvancedFilters` prop to conditionally show/hide condition and price sorting (relevant for Marketplace but not for the Community Feed).
+- **`PostCard`** — A wrapper card component with consistent glassmorphism styling and hover effects, reused across Marketplace and Collection grids.
+- **`EmptyState`** — A reusable component that displays contextual messages when a list is empty (e.g., empty collection, no search results).
+
+### Edge Case Handling
+- **Duplicate Prevention:** Items use boolean flags (`isInCollection`, `isWishlisted`, `isSelling`) on a single data source, making it architecturally impossible to add duplicates.
+- **User Feedback:** Alert messages confirm when items are added/removed from collections. Buttons update their label instantly (e.g., "Add to Collection" becomes "Remove from Collection").
+- **Empty States:** Every list view (Marketplace, Feed, Collection tabs) shows a helpful empty state with a relevant message when no items match.
+- **Item Not Found:** The detail pages show a fallback UI with a back link if an invalid ID is accessed.
+- **Missing Data:** Optional fields like `gallery` are handled with conditional rendering.
+
+### Optimistic UI Updates
+- Toggling Like, Save, Wishlist, and Collection actions updates the UI instantly without waiting for a network response. The Zustand store processes updates synchronously, giving the user immediate feedback.
+
+### Responsive Design
+- The application is fully responsive across mobile, tablet, and desktop using Tailwind's responsive breakpoints.
+- The Marketplace grid scales from 1 column (mobile) to 4 columns (desktop).
+- The Community Feed uses a CSS masonry layout that adapts from 1 to 4 columns.
+- The Navbar collapses gracefully on smaller screens.
+
+### Smooth Animations
+- Hover effects on cards (scale, shadow transitions).
+- Active state feedback on buttons (`active:scale-90`).
+- Smooth page transitions with gradient background animations.
+- Image zoom on hover in feed cards and detail pages.
+
+### Cross-Module Linking
+- Community posts can link to related marketplace items via a `relatedItemId` field, allowing users to navigate from a feed post directly to the item's marketplace listing.
+
+## Project Structure
+
+```
+Client/src/
+├── @types/          # TypeScript type definitions
+├── api/             # Mock data (simulates API responses)
+├── assets/          # Static assets (images, SVGs)
+├── components/      # Reusable UI components
+│   ├── EmptyState.tsx
+│   ├── FeedCard.tsx
+│   ├── FilterBar.tsx
+│   ├── Navbar.tsx
+│   ├── PostCard.tsx
+│   └── ToggleActionButton.tsx
+├── hooks/           # Zustand store (global state)
+├── pages/           # Page-level components
+│   ├── HomePage.tsx
+│   ├── MarketPlacePage.tsx
+│   ├── MarketItemDetail.tsx
+│   ├── FeedPage.tsx
+│   ├── PostDetailPage.tsx
+│   ├── CollectionPage.tsx
+│   └── AccountPage.tsx
+├── routes/          # Route configuration
+├── utils/           # Utility functions (e.g., currency formatter)
+├── App.tsx          # Root component
+└── main.tsx         # Entry point
+```
 
 ---
-*Built as a take-home assignment for the React Intern role.*
+*Built as a take-home assignment for the React Web Developer Internship role.*
