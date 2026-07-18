@@ -50,6 +50,7 @@ A purpose-built vault to manage your personal collection securely.
 - React 18
 - React Router DOM
 - Tailwind CSS
+- Zustand (State Management)
 - Vite (Build Tool)
 
 ---
